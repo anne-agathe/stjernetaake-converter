@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="no">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="styles.css">
+        <script src="currencies.js"></script>
+        <script src="scripts.js"></script>
+        <title>Stjernetåke Converter</title>
+    </head>
+
+    <body onload="generateDropdownFromCurrency(true), generateDropdownToCurrency()">
+        <h1 style="text-align:center;">Stjernetåke Valutaomregner</h1>
+        <p style="text-align:center;"><i>- fordi fantasy må være realistisk</i></p>
+        <br>
+
+        <div class="row">
+            <!-- left column -->
+            <div class="column" id="columnleft" style="text-align:left;">
+                <br><br>
+                <input id="addbutton" type="button" value="+" onclick="generateDropdownFromCurrency(false)">
+            </div>
+
+            <!-- center column -->
+            <div class="column" id="columncenter" style="text-align:center;">
+                <br><br>
+                <input type="button" value="Konvertér" onclick="convert()" id="convertbutton">
+            </div>
+
+            <!-- right column -->
+            <div class="column">
+                <br>
+                <p id="result"></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p style="text-align:center;">Se prosjektet på <a href="https://www.github.com">Github</a> </p> <!-- FIXME link -->
+        </div>
+    </body>
+</html>
