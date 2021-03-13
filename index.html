@@ -8,16 +8,16 @@
         <title>Stjernetåke Converter</title>
     </head>
 
-    <body onload="generateDropdownFromCurrency(true), generateDropdownToCurrency()">
+    <body onload="generateDropdownFromCurrency(), generateDropdownToCurrency()">
         <h1 style="text-align:center;">Stjernetåke Valutaomregner</h1>
         <p style="text-align:center;"><i>- fordi fantasy må være realistisk</i></p>
         <br>
 
         <div class="row">
             <!-- left column -->
-            <div class="column" id="columnleft" style="text-align:left;">
+            <div class="column" id="columnleft" style="text-align:right;">
                 <br><br>
-                <input id="addbutton" type="button" value="+" onclick="generateDropdownFromCurrency(false)">
+                <input id="addbutton" type="button" value="+" onclick="generateDropdownFromCurrency()">
             </div>
 
             <!-- center column -->

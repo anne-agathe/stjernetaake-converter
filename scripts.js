@@ -1,6 +1,8 @@
-function generateDropdownFromCurrency(onload) {
+var deleteButtonCount = 0;
+
+function generateDropdownFromCurrency() {
     var div = document.getElementById("columnleft");
-    var addbutton = document.getElementById("addbutton");
+    var addButton = document.getElementById("addbutton");
 
     // input amount
     var amount = document.createElement("input");
@@ -24,17 +26,20 @@ function generateDropdownFromCurrency(onload) {
         dropdown.appendChild(optgroup);
     }
 
-    var br = document.createElement("br");
+    // delete button
+    var deleteButton = document.createElement("input");
+    deleteButton.type = "button";
+    deleteButton.value = "x";
+    deleteButton.id = "deletebutton" + deleteButtonCount;
+    deleteButtonCount += 1;
+    deleteButton.onclick = function() { deleteInput(deleteButton.id); };
 
     // combine everything
-    if (onload) {
-        div.insertBefore(amount, addbutton);
-        div.insertBefore(dropdown, addbutton);
-    } else {
-        div.appendChild(amount);
-        div.appendChild(dropdown);
+    var br = document.createElement("br");
+    var elements = [amount, dropdown, deleteButton, br];
+    for (var i in elements) {
+        div.insertBefore(elements[i], addButton);
     }
-    div.appendChild(br);
 }
 
 
@@ -61,27 +66,89 @@ function hiddenOption(text) {
 }
 
 
-function convert() {
-    var inputValue = getTotalValue();
-    var result = "";
-    for (var i in DATA.currencies) {
-        if (DATA.currencies[i].name == document.getElementById("dropdownToCurrency").value) {
-            var toCurrency = DATA.currencies[i];
-            for (var j in toCurrency.types) {
-                var coin = toCurrency.types[j]
-                var amount = inputValue / coin.value;
-                inputValue = amount - Math.floor(amount);
-                if (Math.floor(amount) > 0) {
-                    result += Math.floor(amount) + " " + coin.name + "<br>"
-                }
-                if (inputValue <= 0) {
-                    break
+function deleteInput(buttonid) {
+    var div = document.getElementById("columnleft");
+    if (numberOfInputs() > 1) {
+        for (var i in div.childNodes) {
+            if (div.childNodes[i].id == buttonid) {
+                for (var j=0; j < 4; j++) {
+                    div.childNodes[i-2].remove();
                 }
             }
-            break
         }
     }
-    document.getElementById("result").innerHTML = result;
+}
+
+
+function convert() {
+    var errorMessages = checkRequirements();
+    if (errorMessages == "") {
+        var inputValue = getTotalValue();
+        var result = "";
+        for (var i in DATA.currencies) {
+            if (DATA.currencies[i].name == document.getElementById("dropdownToCurrency").value) {
+                var toCurrency = DATA.currencies[i];
+                for (var j in toCurrency.types) {
+                    var coin = toCurrency.types[j]
+                    var amount = inputValue / coin.value;
+                    inputValue = amount - Math.floor(amount);
+                    if (Math.floor(amount) > 0) {
+                        result += Math.floor(amount) + " " + coin.name + "<br>";
+                    }
+                    if (inputValue <= 0) {
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        document.getElementById("result").innerHTML = result;
+    } else {
+        document.getElementById("result").innerHTML = errorMessages;
+    }
+}
+
+
+function checkRequirements() {
+    var errorMessages = "";
+    var inputDiv = document.getElementById("columnleft");
+    for (var i=0; i < inputDiv.childNodes.length-1; i++) {
+        var element = inputDiv.childNodes[i];
+        var nextElement = inputDiv.childNodes[i+1];
+        if (element.tagName == "INPUT" && element.type == "text") {
+            if (element.value == "") {
+                if (nextElement.value == "" && numberOfInputs() > 1) {
+                    continue;
+                }
+                errorMessages += "Mangler antal <br>";
+            } else if (Number.isInteger(parseInt(element.value))) {
+                if (nextElement.value == "") {
+                    errorMessages += "Mangler valuta å konvertere " + element.value + " fra <br>";
+                }
+            } else {
+                errorMessages += "Antal må være et heltal <br>";
+            }
+            if (nextElement.value == "" && !Number.isInteger(parseInt(element.value))) {
+                errorMessages += "Mangler valuta å konvertere fra <br>";
+            }
+        }
+    }
+    if (document.getElementById("dropdownToCurrency").value == "") {
+        errorMessages += "Mangler valuta å konvertere til <br>";
+    }
+    return errorMessages;
+}
+
+
+function numberOfInputs() {
+    var div = document.getElementById("columnleft");
+    var count = 0;
+    for (var i in div.childNodes) {
+        if (div.childNodes[i].value == "x") {
+            count += 1;
+        }
+    }
+    return count;
 }
 
 
