@@ -1,7 +1,10 @@
+// counts number of input rows that have been added since page load
 var deleteButtonCount = 0;
 
+// generates an input element and a dropdown menu of individual coins from currencies.js
+// onload and when +button is clicked
 function generateDropdownFromCurrency() {
-    var div = document.getElementById("columnleft");
+    var inputDiv = document.getElementById("columnleft");
     var addButton = document.getElementById("addbutton");
 
     // input amount
@@ -13,7 +16,7 @@ function generateDropdownFromCurrency() {
     // dropdown
     var dropdown = document.createElement("select");
     dropdown.appendChild(hiddenOption("Velg valuta å konvertere fra"));
-    // dropdown options
+    // dropdown options grouped by country name(s)
     for (var i in DATA.currencies) {
         var currency = DATA.currencies[i];
         var optgroup = document.createElement("optgroup");
@@ -38,11 +41,12 @@ function generateDropdownFromCurrency() {
     var br = document.createElement("br");
     var elements = [amount, dropdown, deleteButton, br];
     for (var i in elements) {
-        div.insertBefore(elements[i], addButton);
+        inputDiv.insertBefore(elements[i], addButton);
     }
 }
 
 
+// generates a dropdown menu of currencies from currencies.js onload
 function generateDropdownToCurrency() {
     var div = document.getElementById("columncenter");
     var dropdown = document.createElement("select");
@@ -57,6 +61,8 @@ function generateDropdownToCurrency() {
 }
 
 
+// a title for dropdown menus. used by generateDropdownFromCurrency()
+// and generateDropdownToCurrency()
 function hiddenOption(text) {
     var opt = new Option(text, "");
     opt.selected = "selected";
@@ -66,13 +72,17 @@ function hiddenOption(text) {
 }
 
 
+// onclick event for delete buttons
 function deleteInput(buttonid) {
-    var div = document.getElementById("columnleft");
+    var inputDiv = document.getElementById("columnleft");
+    // will only be called if there are more than one row of inputs (otherwise unnecessary)
     if (numberOfInputs() > 1) {
-        for (var i in div.childNodes) {
-            if (div.childNodes[i].id == buttonid) {
+        for (var i in inputDiv.childNodes) {
+            // searches for element with buttonid as id and then looks back, removing elements
+            if (inputDiv.childNodes[i].id == buttonid) {
                 for (var j=0; j < 4; j++) {
-                    div.childNodes[i-2].remove();
+                    // removes text input, dropdown, delete button and <br>
+                    inputDiv.childNodes[i-2].remove();
                 }
             }
         }
@@ -80,20 +90,27 @@ function deleteInput(buttonid) {
 }
 
 
+// onclick event for convert button
 function convert() {
     var errorMessages = checkRequirements();
+    // will only convert if requirements are satisfied
     if (errorMessages == "") {
-        var inputValue = getTotalValue();
         var result = "";
+        var inputValue = getTotalValue();
         for (var i in DATA.currencies) {
+            // finds data entry of the to-currency
             if (DATA.currencies[i].name == document.getElementById("dropdownToCurrency").value) {
                 var toCurrency = DATA.currencies[i];
                 for (var j in toCurrency.types) {
                     var coin = toCurrency.types[j]
                     var amount = inputValue / coin.value;
-                    inputValue = amount - Math.floor(amount);
-                    if (Math.floor(amount) > 0) {
-                        result += Math.floor(amount) + " " + coin.name + "<br>";
+                    // ignore this coin and continue, if inputValue would be less than one coin
+                    if (amount < 1) {
+                        continue;
+                    }
+                    if (Math.round(amount) > 0) {
+                        inputValue -= Math.round(amount)*coin.value;
+                        result += Math.round(amount) + " " + coin.name + "<br>";
                     }
                     if (inputValue <= 0) {
                         break;
@@ -109,30 +126,39 @@ function convert() {
 }
 
 
+// checks if there are missing values anywhere and returns error messages if yes.
+// used by convert()
 function checkRequirements() {
-    var errorMessages = "";
     var inputDiv = document.getElementById("columnleft");
+    var errorMessages = "";
     for (var i=0; i < inputDiv.childNodes.length-1; i++) {
         var element = inputDiv.childNodes[i];
         var nextElement = inputDiv.childNodes[i+1];
         if (element.tagName == "INPUT" && element.type == "text") {
             if (element.value == "") {
+                // if in a row no number has been written, no coin selected and there are more than one row,
+                // just ignore this one
                 if (nextElement.value == "" && numberOfInputs() > 1) {
                     continue;
                 }
                 errorMessages += "Mangler antal <br>";
+            // an integer has been correctly entered
             } else if (Number.isInteger(parseInt(element.value))) {
+                // no coin has been selected
                 if (nextElement.value == "") {
                     errorMessages += "Mangler valuta å konvertere " + element.value + " fra <br>";
                 }
+            // no integer has been entered
             } else {
                 errorMessages += "Antal må være et heltal <br>";
             }
+            // no coin has been selected (the no-integer error message will also be called in this instance)
             if (nextElement.value == "" && !Number.isInteger(parseInt(element.value))) {
                 errorMessages += "Mangler valuta å konvertere fra <br>";
             }
         }
     }
+    // no to-currency has been selected
     if (document.getElementById("dropdownToCurrency").value == "") {
         errorMessages += "Mangler valuta å konvertere til <br>";
     }
@@ -140,11 +166,12 @@ function checkRequirements() {
 }
 
 
+// counts number of input rows. used by deleteInput() and checkRequirements()
 function numberOfInputs() {
-    var div = document.getElementById("columnleft");
+    var inputDiv = document.getElementById("columnleft");
     var count = 0;
-    for (var i in div.childNodes) {
-        if (div.childNodes[i].value == "x") {
+    for (var i in inputDiv.childNodes) {
+        if (inputDiv.childNodes[i].value == "x") {
             count += 1;
         }
     }
@@ -152,6 +179,7 @@ function numberOfInputs() {
 }
 
 
+// returns value of input in blankmynt
 function getTotalValue() {
     var inputDiv = document.getElementById("columnleft");
     var totalValue = 0;
