@@ -108,10 +108,8 @@ function convert() {
                     if (amount < 1) {
                         continue;
                     }
-                    if (Math.round(amount) > 0) {
-                        inputValue -= Math.round(amount)*coin.value;
-                        result += Math.round(amount) + " " + coin.name + "<br>";
-                    }
+                    inputValue -= Math.floor(amount)*coin.value;
+                    result += Math.floor(amount) + " " + coin.name + "<br>";
                     if (inputValue <= 0) {
                         break;
                     }
