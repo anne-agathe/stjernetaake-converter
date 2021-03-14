@@ -103,6 +103,11 @@ var DATA = {"currencies": [
                {"name": "Bondestenger",
                 "value": 0.1609375}]},
 
+    {"name": "Strømledere",
+     "area": "Veija",
+     "types": [{"name": "Strømledere",
+                "value": 1.83}]},
+
     {"name": "Gullminner",
      "area": "Wakiliath",
      "types": [{"name": "Gullminner",
