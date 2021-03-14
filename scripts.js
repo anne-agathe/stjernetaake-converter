@@ -10,7 +10,7 @@ function generateDropdownFromCurrency() {
     // input amount
     var amount = document.createElement("input");
     amount.type = "text";
-    amount.placeholder = "Antal";
+    amount.placeholder = "Antall";
     amount.size = "2";
 
     // dropdown
