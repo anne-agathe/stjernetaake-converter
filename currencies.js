@@ -50,6 +50,11 @@ var DATA = {"currencies": [
      "types": [{"name": "Stormer",
                 "value": 0.13}]},
 
+    {"name": "Muja",
+     "area": "Gwan-dey",
+     "types": [{"name": "Muja",
+                "value": 1.8}]},
+
     {"name": "Myakik",
      "area": "Juvanti",
      "types": [{"name": "Myakik",
